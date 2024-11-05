@@ -2,14 +2,14 @@ from common.dal.mongo_util import cursor_to_list_str2
 # from dal.broker_da import BrokerDA, BrokerVisuals
 from common.dal.profile_da import Profile, ProfileInfo
 from common.dal.submission_da import Submission
-from src.apps.copo_core.models import SequencingCentre, ProfileType
-from src.apps.copo_core.utils import get_all_profile_types_for_options_for_user
+from src.apps.ei_core.models import ProfileType
+from src.apps.ei_core.utils import get_all_profile_types_for_options_for_user
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from jsonpickle import encode
-from src.apps.copo_core.models import Banner
+from src.apps.ei_core.models import Banner
 from common.utils.helpers import get_group_membership_asString, get_datetime, get_env
 from common.utils.logger import Logger
 from datetime import datetime
@@ -391,7 +391,9 @@ def release_study(request, profile_id):
         return JsonResponse({"study_release_date": dt_str})
 
 
+"""
 @login_required
 def get_sequencing_centres(request):
     centres = SequencingCentre.objects.all()
     return HttpResponse(encode(centres), content_type='application/json')
+"""

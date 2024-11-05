@@ -12,7 +12,7 @@
         "category"
       ],
       "deprecated": false,
-      "id": "copo.material_attribute_value.category",
+      "id": "ei.material_attribute_value.category",
       "label": "Category",
       "show_in_form": true,
       "ref": "",
@@ -28,7 +28,7 @@
         "value"
       ],
       "deprecated": false,
-      "id": "copo.material_attribute_value.value",
+      "id": "ei.material_attribute_value.value",
       "label": "Value",
       "show_in_form": true,
       "ref": "",
@@ -45,7 +45,7 @@
         "unit"
       ],
       "deprecated": false,
-      "id": "copo.material_attribute_value.unit",
+      "id": "ei.material_attribute_value.unit",
       "type": "object",
       "show_in_form": true,
       "ref": "",

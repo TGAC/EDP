@@ -1,6 +1,6 @@
 from django_tools.middlewares import ThreadLocal
 from common.utils.logger import Logger
-from common.dal.copo_da import DataFile, EnaFileTransfer, EnaChecklist
+from common.dal.copo_da import DataFile, EnaFileTransfer, EIChecklist
 from common.dal.submission_da import Submission
 from common.dal.sample_da import Sample, Source
 from .da import SubmissionQueue
@@ -177,7 +177,7 @@ def delete_ena_records(profile_id, target_ids=list(), target_id=None):
 
 
 def generate_read_record(profile_id=str(), checklist_id=str()):
-    checklist = EnaChecklist().execute_query({"primary_id" : checklist_id})
+    checklist = EIChecklist().execute_query({"primary_id" : checklist_id})
     run_accession_number = []
 
     if not checklist:

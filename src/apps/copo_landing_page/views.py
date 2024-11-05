@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 import json
-from src.apps.copo_core.models import UserDetails, Banner
+from src.apps.ei_core.models import UserDetails, Banner
 from src.apps.copo_news.views import news_list
 
 l = Logger()

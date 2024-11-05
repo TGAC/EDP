@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from .forms import AssemblyForm
 from .utils import EnaAssembly
 from common.s3.s3Connection import S3Connection
-from src.apps.copo_core.views import web_page_access_checker
+from src.apps.ei_core.views import web_page_access_checker
 
 
 @login_required()

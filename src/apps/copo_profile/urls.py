@@ -14,6 +14,6 @@ urlpatterns = [
     # path('visualise/', views.copo_profile_visualise, name="copo_profile_visualise")
     re_path(r'^(?P<profile_id>[a-z0-9]+)/release_study', views.release_study,
             name='release_study'),
-    path('get_sequencing_centres/', views.get_sequencing_centres,
-         name='get_sequencing_centres'),
+    #path('get_sequencing_centres/', views.get_sequencing_centres,
+    #     name='get_sequencing_centres'),
 ]

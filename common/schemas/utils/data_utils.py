@@ -141,47 +141,53 @@ def get_db_template(schema):
     return data
 
 
+"""
 def get_sample_attributes():
     sample_attributes = json_to_pytype(lookup.X_FILES["SAMPLE_ATTRIBUTES"])
     # maybe some logic here to filter the returned attributes,
     # for instance, based on the tags?
     return sample_attributes
+"""
 
-
+"""
 def get_isajson_refactor_type(key):
     out_dict = {}
     if key in json_to_pytype(lookup.X_FILES["ISA_JSON_REFACTOR_TYPES"]):
         out_dict = json_to_pytype(
             lookup.X_FILES["ISA_JSON_REFACTOR_TYPES"])[key]
     return out_dict
-
+"""
 
 def json_to_pytype(path_to_json, compatibility_mode=True):
     return helpers.json_to_pytype(path_to_json, compatibility_mode)
 
-
+"""
 def get_repo_type_options():
     return lookup.DROP_DOWNS['REPO_TYPE_OPTIONS']
-
-
+"""
+    
+"""
 def get_dataverse_subject_dropdown():
     return lookup.DROP_DOWNS['DATAVERSE_SUBJECTS']
+"""
 
-
+"""
 def get_study_type_options():
     return lookup.DROP_DOWNS['STUDY_TYPES']
+"""
 
-
+"""
 def get_assembly_type_option():
     return lookup.DROP_DOWNS['ASSEMBLY_TYPES']
+"""
 
-
+ 
 def get_sample_type_options():
     data = lookup.DROP_DOWNS_SOURCE.get("sample_type_options", str())
     if isinstance(data, str) and data:  # it's only a path, resolve to get actual data
         data = helpers.json_to_pytype(data)
     return data
-
+"""
 
 def get_repository_options():
     data = lookup.DROP_DOWNS_SOURCE.get("repository_options", str())
@@ -291,6 +297,7 @@ def get_db_json_schema(component):
     # ...set other paths accordingly depending on where the actual files reside or, conceptually, the schema provider
 
     schema_dict = dict(
+        """
         publication=json_to_pytype(os.path.join(
             isa_path, 'publication_schema.json')).get("properties", dict()),
         person=json_to_pytype(os.path.join(isa_path, 'person_schema.json')).get(
@@ -331,7 +338,7 @@ def get_db_json_schema(component):
             "properties", dict()),
         ontology_source_reference=json_to_pytype(os.path.join(isa_path, 'ontology_source_reference_schema.json')).get(
             "properties", dict()),
-
+        """
     )
 
     return schema_dict.get(component, dict())
@@ -384,20 +391,20 @@ def get_copo_schema(component, as_object=False):
     :return:
     """
     from common.dal.copo_base_da import DataSchemas
-    schema_base = DataSchemas("COPO").get_ui_template().get("copo")
+        
+    schema_base = DataSchemas.get_ui_template("COPO").get("copo")
 
+    """
     schema_dict = dict(
-        publication=schema_base.get("publication").get("fields", list()),
-        person=schema_base.get("person").get("fields", list()),
-        datafile=schema_base.get("datafile").get("fields", list()),
-        sample=schema_base.get("sample").get("fields", list()),
-        source=schema_base.get("source").get("fields", list()),
-        ontology_annotation=schema_base.get(
-            "ontology_annotation").get("fields", list()),
-        comment=schema_base.get("comment").get("fields", list()),
-        material_attribute_value=schema_base.get(
-            "material_attribute_value").get("fields", list()),
-        duration=schema_base.get("duration").get("fields", list()),
+        publication=DataSchemas.get_ui_template_node("COPO", "publication"),
+        person=DataSchemas.get_ui_template_node("COPO", "person"),
+        datafile=DataSchemas.get_ui_template_node("COPO", "datafile"),
+        sample=DataSchemas.get_ui_template_node("COPO", "sample"),  
+        source=DataSchemas.get_ui_template_node("COPO", "source"), 
+        ontology_annotation=DataSchemas.get_ui_template_node("COPO", "ontology_annotation"), 
+        comment=DataSchemas.get_ui_template_node("COPO", "comment"),
+        material_attribute_value=DataSchemas.get_ui_template_node("COPO", "material_attribute_value"), 
+        duration=DataSchemas.get_ui_template_node("COPO", "duration"),
         miappe_rooting_greenhouse=schema_base.get('miappe').get(
             'rooting').get('greenhouse').get("fields", list()),
         miappe_rooting_field=schema_base.get('miappe').get(
@@ -410,18 +417,18 @@ def get_copo_schema(component, as_object=False):
             "phenotypic_variables").get("fields", list()),
         environment_variables=schema_base.get("miappe").get(
             "environment_variables").get("fields", list()),
-        metadata_template=schema_base.get(
-            "metadata_template").get("fields", list()),
-        approval=schema_base.get("approval").get("fields", list()),
+        metadata_template=DataSchemas.get_ui_template_node("COPO", "metadata_template"),
+        approval=DataSchemas.get_ui_template_node("COPO", "approval")
     )
-
     schema = schema_dict.get(component, list())
+    """
+
+    schema = DataSchemas.get_ui_template_node("EI", component)
 
     if schema and as_object:
         schema = json_to_object(dict(fields=schema)).fields
 
     return schema
-
 
 def object_type_control_map():
     """
@@ -499,6 +506,19 @@ def san_check(val):
 def get_unqualified_id(qual):
     return qual.split(".")[-1]
 
+def get_sensitive_fields(component):
+    schema = get_copo_schema(component)
+    sensitive_fields = [x['id'].split('.')[-1] for x in schema if x.get('is_sensitive', False)]
+    return sensitive_fields
+
+def get_export_fields(component, project):
+    schema = get_copo_schema(component)
+    output = set()
+    for x in schema:
+        if x.get('show_in_api', False) and not x.get('is_sensitive', False):
+            if not x.get('specifications', list()) or project.lower() in x.get('specifications', list()):
+                output.add(x['id'].split('.')[-1])
+    return list(output)
 
 class DecoupleFormSubmission:
     def __init__(self, auto_fields, schema):

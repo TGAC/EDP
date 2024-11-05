@@ -13,7 +13,6 @@ import jsonpath_rw_ext as jp
 from bson.errors import InvalidId
 from src.apps.api.utils import get_return_template, extract_to_template, finish_request
 from src.apps.api.views.mapping import get_standard_data
-from common.dal.copo_da import APIValidationReport
 from common.dal.sample_da import Sample, Source
 from common.dal.submission_da import Submission
 from common.dal.profile_da import Profile
@@ -24,12 +23,7 @@ from common.lookup.lookup import API_ERRORS, WIZARD_FILES
 from common.lookup.lookup import API_ERRORS
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework import authentication, permissions
 from common.utils.logger import Logger
-import pickle
-from src.apps.copo_dtol_upload.utils.Dtol_Spreadsheet import DtolSpreadsheet
-from src.apps.copo_dtol_upload.utils.da import ValidationQueue
 from io import BytesIO
 
 def get(request, id):
@@ -560,71 +554,4 @@ def get_all(request):
     return finish_request(out_list)
 
 
-class APIValidateManifest(APIView):
-
-    def sample_spreadsheet(request, report_id=""):
-        file = request.FILES["file"]
-        name = file.name
-        if "profile_id" in request.POST:
-            p_id = request.POST["profile_id"]
-        else:
-            p_id = request.session["profile_id"]
-        dtol = DtolSpreadsheet(file=file, p_id=p_id)
-        if name.endswith("xlsx") or name.endswith("xls"):
-            fmt = 'xls'
-        elif name.endswith("csv"):
-            fmt = 'csv'
-        else:
-            msg = "Unrecognised file format for spreadsheet. " \
-                "File format should be either <strong>.xls</strong>, <strong>.xlsx</strong> or <strong>.csv</strong>."
-            Logger().error("Unrecognised file format for sample spreadsheet")
-            return HttpResponse(status=400, content=msg)
-
-        if dtol.loadManifest(m_format=fmt):
-            bytesstring = BytesIO()
-            dtol.data.to_pickle(bytesstring)
-             
-            if "profile_id" in request.POST:
-                p_id = request.POST["profile_id"]
-            else:
-                p_id = request.session["profile_id"]
-            r = {"$set": {"manifest_data": bytesstring.getvalue(), "profile_id": p_id, "schema_validation_status": "pending",
-                        "taxon_validation_status": "pending", "err_msg": [],
-                        "time_added": datetime.utcnow(),
-                        "file_name": name,
-                        "isupdate": False,
-                        "report_id": report_id
-                        }}
-            ValidationQueue().get_collection_handle().update_one({"profile_id": p_id}, r, upsert=True)
-
-        return HttpResponse()
-
-
-    def post(self, request):
-        id = APIValidationReport().get_collection_handle().insert_one(
-            {"profile_id": request.POST["profile_id"], "status": "pending", "content": "",
-             "submitted": datetime.datetime.utcnow(), "user_id": request.user.id})
-        self.sample_spreadsheet(request, report_id=id.inserted_id)
-
-        out = {"validation_report_id": str(id.inserted_id)}
-        return Response(out)
-
-
-class APIGetManifestValidationReport(APIView):
-    def post(self, request):
-        uid = request.user.id
-        validation_id = request.POST.get("validation_report_id")
-        v_record = APIValidationReport().get_record(validation_id)
-        profile_record = Profile().get_record(v_record["profile_id"])
-        if profile_record["user_id"] == uid:
-            out = {"status": v_record["status"], "content": v_record["content"], "submitted": v_record["submitted"]}
-        else:
-            out = {"content": "User not permitted to view resource"}
-        return Response(out)
-
-
-class APIGetUserValidations(APIView):
-    def post(self, request):
-        uid = request.user.id
-        v_records = APIValidationReport().get_collection_handle().find({"user_id": uid}, {"_id": 0})
-        return Response(list(v_records))
+ 

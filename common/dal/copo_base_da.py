@@ -6,101 +6,72 @@ from bson.errors import InvalidId
 from common.utils import helpers
 from common.dal.mongo_util import cursor_to_list
 
-Schemas = get_collection_ref("Schemas")
+
 
 class DataSchemas:
-    def __init__(self, schema):
-        self.schema = schema.upper()
 
-    def add_ui_template(self, template):
+    ui_template_schemas = dict()
+    schemas_collection_handler = get_collection_ref("Schemas")
+
+    @classmethod
+    def get_ui_template(cls, schema):
+        if schema not in cls.ui_template_schemas:
+            data = cls.schemas_collection_handler.find_one({"schemaName": schema.upper(), "schemaType": "UI"})
+            if data:
+                cls.ui_template_schemas[schema]= data.get("data", dict())
+        return cls.ui_template_schemas.get(schema.upper(),[])
+
+    @classmethod
+    def add_ui_template(cls, schema, template):
         # remove any existing UI templates for the target schema
-        self.delete_ui_template()
+        cls.delete_ui_template(schema)
+        doc = {"schemaName": schema.upper(), "schemaType": "UI", "data": template}
+        cls.schemas_collection_handler.insert_one(doc)
 
-        doc = {"schemaName": self.schema, "schemaType": "UI", "data": template}
-        Schemas.insert_one(doc)
+    @classmethod
+    def delete_ui_template(cls, schema):
+        cls.schemas_collection_handler.delete_one({"schemaName": schema, "schemaType": "UI"})
 
-    def delete_ui_template(self):
-        Schemas.delete_one({"schemaName": self.schema, "schemaType": "UI"})
 
-    def get_ui_template(self):
-        try:
-            doc = Schemas.find_one({"schemaName": self.schema, "schemaType": "UI"})
-            doc = doc["data"]
-        except Exception as e:
-            exception_message = "Couldn't retrieve component schema. " + str(e)
-            print(exception_message)
-            raise
+    @classmethod
+    def get_ui_template_node(cls, schema, identifier):
+        doc = cls.get_ui_template(schema)
+        return  doc.get(schema.lower(), dict()).get(identifier.lower(),dict()).get("fields",[])
+    
+    @classmethod
+    def refresh(cls):
+        cls.ui_template_schemas = dict()
 
-        return doc
 
-    def get_ui_template_node(self, identifier):
-        doc = self.get_ui_template()
-        doc = {k.lower(): v for k, v in doc.items() if k.lower() == 'copo'}
-        doc = {k.lower(): v for k, v in doc.get("copo", dict()).items() if k.lower() == identifier.lower()}
-
-        return doc.get(identifier.lower(), dict()).get("fields", list())
-
-PubCollection = 'PublicationCollection'
-PersonCollection = 'PersonCollection'
-DataCollection = 'DataCollection'
 SampleCollection = 'SampleCollection'
 AuditCollection = 'AuditCollection'
 SubmissionCollection = 'SubmissionCollection'
 SourceCollection = 'SourceCollection'
 DataFileCollection = 'DataFileCollection'
-RemoteFileCollection = 'RemoteFileCollection'
-DescriptionCollection = 'DescriptionCollection'
 ProfileCollection = 'Profiles'
-AnnotationReference = 'AnnotationCollection'
 GroupCollection = 'GroupCollection'
-RepositoryCollection = 'RepositoryCollection'
-CGCoreCollection = 'CGCoreCollection'
-TextAnnotationCollection = 'TextAnnotationCollection'
 SubmissionQueueCollection = 'SubmissionQueueCollection'
-MetadataTemplateCollection = 'MetadataTemplateCollection'
-FileTransferQueueCollection = 'FileTransferQueueCollection'
-StatsCollection = 'StatsCollection'
-BarcodeCollection = 'BarcodeCollection'
-ValidationQueueCollection = 'ValidationQueueCollection'
 EnaFileTransferCollection = 'EnaFileTransferCollection'
-APIValidationReport = 'ApiValidationReport'
-TestCollection = 'TestCollection'
 AssemblyCollection = 'AssemblyCollection'
 AnnotationCollection = "SeqAnnotationCollection"
-TaggedSequenceCollection = "TagSequenceCollection"
-EnaChecklistCollection = "EnaChecklistCollection"
+EIChecklistCollection = "EIChecklistCollection"
 ReadObjectCollection = "SampleCollection"
 
 handle_dict = dict(audit=get_collection_ref(AuditCollection),
-                   publication=get_collection_ref(PubCollection),
-                   person=get_collection_ref(PersonCollection),
                    sample=get_collection_ref(SampleCollection),
                    accessions=get_collection_ref(SampleCollection),
                    source=get_collection_ref(SourceCollection),
                    profile=get_collection_ref(ProfileCollection),
                    submission=get_collection_ref(SubmissionCollection),
                    datafile=get_collection_ref(DataFileCollection),
-                   annotation=get_collection_ref(AnnotationReference),
                    group=get_collection_ref(GroupCollection),
-                   repository=get_collection_ref(RepositoryCollection),
-                   cgcore=get_collection_ref(CGCoreCollection),
-                   textannotation=get_collection_ref(TextAnnotationCollection),
-                   metadata_template=get_collection_ref(
-                       MetadataTemplateCollection),
-                   stats=get_collection_ref(StatsCollection),
-                   test=get_collection_ref(TestCollection),
-                   barcode=get_collection_ref(BarcodeCollection),
-                   validationQueue=get_collection_ref(
-                       ValidationQueueCollection),
                    enaFileTransfer=get_collection_ref(
                        EnaFileTransferCollection),
-                   apiValidationReport=get_collection_ref(APIValidationReport),
                    assembly=get_collection_ref(AssemblyCollection),
                    seqannotation=get_collection_ref(AnnotationCollection),
                    submissionQueue=get_collection_ref(
                        SubmissionQueueCollection),
-                   taggedseq=get_collection_ref(TaggedSequenceCollection),
-                   enaChecklist=get_collection_ref(EnaChecklistCollection),
+                   eiChecklist=get_collection_ref(EIChecklistCollection),
                    read=get_collection_ref(ReadObjectCollection)
                    )
 
@@ -163,18 +134,13 @@ class DAComponent:
 
     def get_id_base(self):
         base_dict = dict(
-            publication="copo.publication",
-            person="copo.person",
-            datafile="copo.datafile",
-            sample="copo.sample",
-            accessions="copo.accessions",
-            source="copo.source",
-            profile="copo.profile",
-            submission="copo.submission",
-            repository="copo.repository",
-            annotation="copo.annotation",
-            assembly="copo.assembly",
-            seqannotation="copo.seqannotation",
+            datafile="ei.datafile",
+            sample="ei.sample",
+            source="ei.source",
+            profile="ei.profile",
+            submission="ei.submission",
+            assembly="ei.assembly",
+            seqannotation="ei.seqannotation",
             investigation="i_",
             study="s_",
             assay="a_",
@@ -186,16 +152,10 @@ class DAComponent:
         return self.get_id_base() + "." + elem
 
     def get_schema(self, **kwargs):
-        from common.schemas.utils import data_utils
-        schema_base = DataSchemas("COPO").get_ui_template().get("copo")
-        x = data_utils.json_to_object(schema_base.get(self.component, dict()))
-
-        return dict(schema_dict=schema_base.get(self.component, dict()).get("fields", list()),
-                    schema=x.fields
-                    )
+        return dict(schema_dict=DataSchemas.get_ui_template_node("EI", self.component))
 
     def get_component_schema(self, **kwargs):
-        return DataSchemas("COPO").get_ui_template_node(self.component)
+        return DataSchemas.get_ui_template_node("EI", self.component)
 
     def validate_record(self, auto_fields=dict(), validation_result=dict(), **kwargs):
         """

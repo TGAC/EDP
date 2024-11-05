@@ -11,7 +11,7 @@
         "envo"
       ],
       "show_in_form": true,
-      "id": "copo.miappe.phenotypic_variables.trait",
+      "id": "ei.miappe.phenotypic_variables.trait",
       "show_in_table": true,
       "ref": "",
       "control": "ontology term",
@@ -32,7 +32,7 @@
         "envo"
       ],
       "show_in_form": true,
-      "id": "copo.miappe.phenotypic_variables.method",
+      "id": "ei.miappe.phenotypic_variables.method",
       "show_in_table": true,
       "ref": "",
       "control": "ontology term",
@@ -53,7 +53,7 @@
         "envo"
       ],
       "show_in_form": true,
-      "id": "copo.miappe.phenotypic_variables.scale",
+      "id": "ei.miappe.phenotypic_variables.scale",
       "show_in_table": true,
       "ref": "",
       "control": "ontology term",

@@ -1,8 +1,9 @@
-from src.apps.copo_core.models import SequencingCentre
+from src.apps.ei_core.models import SequencingCentre
 from common.dal.submission_da import Submission
 from src.apps.copo_read_submission.utils.ena_read_submission import EnaReads
 from common.dal.sample_da import Sample
 
+"""
 def pre_save_erga_profile(auto_fields):
     associated_profiles = auto_fields.get("copo.profile.associated_type", [])
     sequence_centres = auto_fields.get("copo.profile.sequencing_centre", [])
@@ -13,7 +14,7 @@ def pre_save_erga_profile(auto_fields):
                 associated_profiles.append(sc.name)
         auto_fields["copo.profile.associated_type"] = associated_profiles
         return {"status": "success"} 
-
+"""
 
 def post_save_dtol_profile(profile):
     if profile["date_created"] != profile["date_modified"]:

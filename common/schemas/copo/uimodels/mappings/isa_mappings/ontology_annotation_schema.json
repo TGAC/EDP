@@ -7,7 +7,7 @@
   "properties": [
     {
       "deprecated": false,
-      "id": "copo.ontology_annotation.annotationValue",
+      "id": "ei.ontology_annotation.annotationValue",
       "label": "Annotation Value",
       "control_meta": {},
       "show_in_form": true,
@@ -22,7 +22,7 @@
     },
     {
       "deprecated": false,
-      "id": "copo.ontology_annotation.termSource",
+      "id": "ei.ontology_annotation.termSource",
       "label": "Term Source",
       "control_meta": {},
       "show_in_form": true,
@@ -37,7 +37,7 @@
     },
     {
       "deprecated": false,
-      "id": "copo.ontology_annotation.termAccession",
+      "id": "ei.ontology_annotation.termAccession",
       "label": "Term Accession",
       "control_meta": {},
       "show_in_form": true,
@@ -52,7 +52,7 @@
     },
     {
       "deprecated": false,
-      "id": "copo.ontology_annotation.comments",
+      "id": "ei.ontology_annotation.comments",
       "label": "Comments",
       "control_meta": {},
       "show_in_form": true,

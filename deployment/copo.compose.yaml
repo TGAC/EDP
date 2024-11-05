@@ -54,7 +54,6 @@ services:
       - ECS_ENDPOINT=https://ei-copo.obj-data.nbi.ac.uk
       - ENA_V2_SERVICE_SYNC=https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit
       - ENA_V2_SERVICE_ASYNC=https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit/queue
-      - B2DROP_PERMITS=/copo/b2drop/permits
       - ENA_V1_SAMPLE_SERVICE=https://wwwdev.ebi.ac.uk/ena/submit/drop-box/samples
       
     depends_on:
@@ -158,7 +157,6 @@ services:
       - ECS_ENDPOINT=https://ei-copo.obj-data.nbi.ac.uk
       - ENA_V2_SERVICE_SYNC=https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit
       - ENA_V2_SERVICE_ASYNC=https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit/queue
-      - B2DROP_PERMITS=/copo/b2drop/permits
     depends_on:
       - redis
       - postgres

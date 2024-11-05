@@ -69,20 +69,14 @@ DATA_UPLOAD_MAX_NUMBER_FILES = 1000
 # user-defined applications definition
 PROJECT_APPS = [
     'channels',
-    'src.apps.copo_core',
+    'src.apps.ei_core',
     'src.apps.copo_profile',
-    'src.apps.copo_sample',
     'src.apps.copo_login',
-    'src.apps.copo_dtol_upload',
-    'src.apps.copo_dtol_submission',
     'src.apps.copo_landing_page',
     'src.apps.copo_read_submission',
     'src.apps.copo_assembly_submission',
     'src.apps.copo_seq_annotation_submission',
-    'src.apps.copo_barcoding_submission',
     'src.apps.copo_file',
-    'src.apps.copo_accession',
-    'src.apps.copo_tol_dashboard',
     'src.apps.copo_manifest_wizard',
     'src.apps.copo_news',
     'src.apps.api',
@@ -132,12 +126,13 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_tools.middlewares.ThreadLocal.ThreadLocalMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     'compression_middleware.middleware.CompressionMiddleware',
-    'src.apps.copo_core.middlewares.LocksMiddleware.LocksMiddleware',
-    'src.apps.copo_core.middlewares.LogUncaughtExceptions.LogUncaughtExceptions',
+    'src.apps.ei_core.middlewares.LocksMiddleware.LocksMiddleware',
+    'src.apps.ei_core.middlewares.LogUncaughtExceptions.LogUncaughtExceptions',
     'allow_cidr.middleware.AllowCIDRMiddleware'
 ]
 
@@ -258,7 +253,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'src', 'apps',
                          'copo_landing_page', 'templates'),
             os.path.join(BASE_DIR, 'src', 'apps',
-                         'copo_core', 'templates', 'copo'),
+                         'ei_core', 'templates', 'copo'),
             os.path.join(BASE_DIR, 'static', 'swagger'),
         ],
         'APP_DIRS': True,
@@ -275,8 +270,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.template.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
-                'src.apps.copo_core.custom_context_template.latest_message',
-                'src.apps.copo_core.custom_context_template.copo_context'
+                'src.apps.ei_core.custom_context_template.latest_message',
+                'src.apps.ei_core.custom_context_template.copo_context'
             ],
             'debug':  DEBUG,
         },

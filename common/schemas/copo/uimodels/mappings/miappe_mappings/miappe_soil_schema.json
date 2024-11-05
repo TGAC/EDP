@@ -8,7 +8,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": true,
-      "id": "copo.miappe.nutrients.soil.extractable_N_content_per_unit_ground_area_before_fertiliser_added",
+      "id": "ei.miappe.nutrients.soil.extractable_N_content_per_unit_ground_area_before_fertiliser_added",
       "show_in_table": true,
       "control": "text",
       "versions": [
@@ -25,7 +25,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": true,
-      "id": "copo.miappe.nutrients.soil.type_of_fertiliser_added",
+      "id": "ei.miappe.nutrients.soil.type_of_fertiliser_added",
       "show_in_table": true,
       "control": "text",
       "versions": [
@@ -42,7 +42,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": true,
-      "id": "copo.miappe.nutrients.soil.amount_of_fertiliser_added_per_container_or_m2",
+      "id": "ei.miappe.nutrients.soil.amount_of_fertiliser_added_per_container_or_m2",
       "show_in_table": true,
       "control": "text",
       "versions": [
@@ -55,7 +55,7 @@
   "description": "Schema representing soil object",
   "configuration": {
     "type": "json",
-    "provider": "copo",
+    "provider": "ei",
     "ref": ""
   },
   "title": "Soil mappings"

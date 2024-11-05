@@ -1,6 +1,6 @@
 from src.celery import app
 from common.utils.logger import Logger
-from src.apps.copo_core.tasks import only_one, CopoBaseClassForTask
+from src.apps.ei_core.tasks import only_one, CopoBaseClassForTask
 import common.ena_utils.FileTransferUtils as tx
 from .utils.ena_read_submission import EnaReads
 

@@ -3,9 +3,8 @@ __author__ = 'felix.shaw@tgac.ac.uk - 20/01/2016'
 from django.urls import path, re_path
 # from web.apps.web_copo import ajax_handlers
 # from .annotate_views import search_all, post_annotations, handle_upload
-from .views import audit, person, general, stats, profile, mapping
+from .views import audit, general, stats, profile, mapping
 from .views import sample as s
-from .views.sample import APIValidateManifest, APIGetManifestValidationReport, APIGetUserValidations
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from .views import manifest_view
@@ -13,8 +12,6 @@ from .views import manifest_view
 app_name = 'api'
 
 generic_api_patterns = [
-    re_path(r'^person/get/(?P<id>[a-z0-9]+)', person.get, name='person/get'),
-    path('person/get/', person.get_all, name='person/get/all'),
     path('sample/get/', s.get_all, name='sample/get/all'),
     # path('search/', search_all, name='search_all'),
     # path('annotations/', post_annotations, name='post_annotations'),
@@ -29,13 +26,7 @@ dtol_api_patterns = [
     re_path(r'^audit/sample/copo_id/(?P<copo_id>[A-Za-z0-9, ]+)',
             audit.get_sample_updates_by_copo_id, name='get_sample_updates_by_copo_id'),
 
-    # dates must be ISO 8601 formatted
-    re_path(r'^manifest/validations', APIGetUserValidations.as_view(),
-            name='/manifest/validate/report'),
-    re_path(r'^manifest/validate/report', APIGetManifestValidationReport.as_view(),
-            name='/manifest/validate/report'),
-    re_path(r'^manifest/validate', APIValidateManifest.as_view(),
-            name='manifest/validate'),
+ 
 
     re_path(r'^manifest/sequencing_centre', s.get_manifests_by_sequencing_centre,
             name='get_manifests_by_sequencing_centre'),

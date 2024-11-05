@@ -1,7 +1,7 @@
 {
   "configuration": {
     "type": "json",
-    "provider": "copo",
+    "provider": "ei",
     "ref": ""
   },
   "properties": [
@@ -19,7 +19,7 @@
       "hidden": "false",
       "label": "Title",
       "show_in_form": true,
-      "id": "copo.profile.title",
+      "id": "ei.profile.title",
       "type": "string",
       "show_in_table": true,
       "control": "text"
@@ -37,7 +37,7 @@
       "hidden": "false",
       "label": "Description",
       "show_in_form": true,
-      "id": "copo.profile.description",
+      "id": "ei.profile.description",
       "type": "string",
       "show_in_table": true,
       "control": "textarea"
@@ -55,7 +55,7 @@
       "hidden": "false",
       "label": "Profile Type",
       "show_in_form": true,
-      "id": "copo.profile.type",
+      "id": "ei.profile.type",
       "type": "string",
       "show_in_table": true,
       "control": "text",
@@ -78,7 +78,7 @@
       "label": "Associated Profile Type",
       "placeholder": "Select associated type(s)",
       "show_in_form": true,
-      "id": "copo.profile.associated_type",
+      "id": "ei.profile.associated_type",
       "type": "array",
       "show_in_table": true,
       "control": "copo-multi-select2",
@@ -86,7 +86,7 @@
         "callback": {
           "parameter": {"profile_type": "erga"},
           "function": "get_all_associated_profile_type_for_options",
-          "provider": "src.apps.copo_core.utils"
+          "provider": "src.apps.ei_core.utils"
          }
       }
     },
@@ -107,7 +107,7 @@
       "label": "Associated Profile Type",
       "placeholder": "Select associated type(s)",
       "show_in_form": true,
-      "id": "copo.profile.associated_type",
+      "id": "ei.profile.associated_type",
       "type": "array",
       "show_in_table": false,
       "readonly": "true",
@@ -116,7 +116,7 @@
         "callback": {
           "parameter": {"profile_type": "asg"},
           "function": "get_all_associated_profile_type_for_options",
-          "provider": "src.apps.copo_core.utils"
+          "provider": "src.apps.ei_core.utils"
          }
       }    
     },  
@@ -137,7 +137,7 @@
       "label": "Associated Profile Type",
       "placeholder": "Select associated type(s)",
       "show_in_form": true,
-      "id": "copo.profile.associated_type",
+      "id": "ei.profile.associated_type",
       "type": "array",
       "show_in_table": false,
       "readonly": "true",
@@ -146,7 +146,7 @@
         "callback": {
           "parameter": {"profile_type": "dtol"},
           "function": "get_all_associated_profile_type_for_options",
-          "provider": "src.apps.copo_core.utils"
+          "provider": "src.apps.ei_core.utils"
          }
       }    
     },        
@@ -167,7 +167,7 @@
       "label": "Sequencing Centre",
       "placeholder": "Select sequencing centre",
       "show_in_form": true,
-      "id": "copo.profile.sequencing_centre",
+      "id": "ei.profile.sequencing_centre",
       "type": "array",
       "show_in_table": true,
       "control": "copo-multi-select2",
@@ -175,7 +175,7 @@
         "callback": {
           "parameter": {},
           "function": "get_all_sequencing_centres_for_options",
-          "provider": "src.apps.copo_core.utils"
+          "provider": "src.apps.ei_core.utils"
          }
       }
     },
@@ -192,7 +192,7 @@
       "hidden": "true",
       "label": "Created",
       "show_in_form": false,
-      "id": "copo.profile.date_created",
+      "id": "ei.profile.date_created",
       "type": "string",
       "show_in_table": true,
       "control": "datetime"
@@ -210,7 +210,7 @@
       "hidden": "true",
       "label": "Modified",
       "show_in_form": false,
-      "id": "copo.profile.date_modified",
+      "id": "ei.profile.date_modified",
       "type": "string",
       "show_in_table": true,
       "control": "datetime"
@@ -228,7 +228,7 @@
       "hidden": "true",
       "label": "COPO ID",
       "show_in_form": false,
-      "id": "copo.profile.copo_id",
+      "id": "ei.profile.copo_id",
       "type": "string",
       "show_in_table": false,
       "control": "text"
@@ -246,7 +246,7 @@
       "hidden": "true",
       "label": "User ID",
       "show_in_form": false,
-      "id": "copo.profile.user_id",
+      "id": "ei.profile.user_id",
       "type": "string",
       "show_in_table": false,
       "control": "text"
@@ -264,7 +264,7 @@
       "hidden": "true",
       "label": "Delete",
       "show_in_form": false,
-      "id": "copo.profile.deleted",
+      "id": "ei.profile.deleted",
       "type": "string",
       "show_in_table": false,
       "control": "text"
@@ -282,7 +282,7 @@
       "hidden": "true",
       "label": "First Manifest Created",
       "placeholder": false,
-      "id": "copo.profile.first_manifest_date_created",
+      "id": "ei.profile.first_manifest_date_created",
       "type": "string",
       "show_in_table": false,
       "control": "datetime"
@@ -300,7 +300,7 @@
       "hidden": "true",
       "label": "Last Manifest Modified",
       "show_in_form": false,
-      "id": "copo.profile.last_manifest_date_modified",
+      "id": "ei.profile.last_manifest_date_modified",
       "type": "string",
       "show_in_table": false,
       "control": "datetime"
@@ -325,7 +325,7 @@
       "hidden": "false",
       "label": "ENA locus tags",
       "show_in_form": true,
-      "id": "copo.profile.ena_locus_tags",
+      "id": "ei.profile.ena_locus_tags",
       "type": "string",
       "show_in_table": true,
       "control": "textarea",
@@ -347,7 +347,7 @@
       "hidden": "false",
       "label": "TEST",
       "show_in_form": true,
-      "id": "copo.profile.test",
+      "id": "ei.profile.test",
       "type": "string",
       "show_in_table": true,
       "control": "text",

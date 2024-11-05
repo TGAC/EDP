@@ -10,7 +10,7 @@ import gzip
 from .generic_helper import transfer_to_ena as to_ena
 from common.utils.helpers import get_env
 from datetime import datetime
-from src.apps.copo_core.models import StatusMessage, User
+from src.apps.ei_core.models import StatusMessage, User
 import threading
 import hashlib
 from pathlib import Path

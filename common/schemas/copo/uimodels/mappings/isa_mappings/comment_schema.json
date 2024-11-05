@@ -7,7 +7,7 @@
   "properties": [
     {
       "deprecated": false,
-      "id": "copo.comment.name",
+      "id": "ei.comment.name",
       "label": "Title",
       "control_meta": {},
       "show_in_form": true,
@@ -22,7 +22,7 @@
     },
     {
       "deprecated": false,
-      "id": "copo.comment.value",
+      "id": "ei.comment.value",
       "label": "Value",
       "control_meta": {},
       "show_in_form": true,

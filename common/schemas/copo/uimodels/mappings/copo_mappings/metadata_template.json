@@ -1,7 +1,7 @@
 {
   "configuration": {
     "type": "json",
-    "provider": "copo",
+    "provider": "ei",
     "ref": ""
   },
   "properties": [
@@ -16,7 +16,7 @@
       "description": "Name of Template",
       "deprecated": false,
       "hidden": "false",
-      "id": "copo.metadata_template.template_name",
+      "id": "ei.metadata_template.template_name",
       "label": "Template Name",
       "show_in_form": true,
       "ref": "",
@@ -37,7 +37,7 @@
       "hidden": "true",
       "label": "UserId",
       "show_in_form": false,
-      "id": "copo.metadata_template.uid",
+      "id": "ei.metadata_template.uid",
       "type": "string",
       "show_in_table": false,
       "control": "text"
@@ -55,7 +55,7 @@
       "hidden": "true",
       "label": "profile_id",
       "show_in_form": false,
-      "id": "copo.metadata_template.profile_id",
+      "id": "ei.metadata_template.profile_id",
       "type": "string",
       "show_in_table": false,
       "control": "text"
@@ -73,7 +73,7 @@
       "hidden": "false",
       "label": "Term",
       "show_in_form": false,
-      "id": "copo.metadata_template.terms",
+      "id": "ei.metadata_template.terms",
       "type": "array",
       "show_in_table": false,
       "control": ""
@@ -90,7 +90,7 @@
       "hidden": "true",
       "label": "Delete",
       "show_in_form": false,
-      "id": "copo.metadata_template.deleted",
+      "id": "ei.metadata_template.deleted",
       "type": "string",
       "show_in_table": false,
       "control": "text"

@@ -8,7 +8,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": false,
-      "id": "copo.annotation.document_name",
+      "id": "ei.annotation.document_name",
       "show_in_table": true,
       "unique": true,
       "control": "text",
@@ -26,7 +26,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": false,
-      "id": "copo.annotation.profile_id",
+      "id": "ei.annotation.profile_id",
       "show_in_table": false,
       "unique": true,
       "control": "text",
@@ -44,7 +44,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": false,
-      "id": "copo.annotation.raw",
+      "id": "ei.annotation.raw",
       "show_in_table": false,
       "unique": true,
       "control": "text",
@@ -62,7 +62,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": false,
-      "id": "copo.annotation.type",
+      "id": "ei.annotation.type",
       "show_in_table": true,
       "unique": true,
       "control": "text",
@@ -80,7 +80,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": true,
-      "id": "copo.annotation.annotation",
+      "id": "ei.annotation.annotation",
       "show_in_table": false,
       "control": "copo-characteristics",
       "versions": [
@@ -97,7 +97,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": false,
-      "id": "copo.annotation.deleted",
+      "id": "ei.annotation.deleted",
       "show_in_table": false,
       "control": "text",
       "versions": [
@@ -114,7 +114,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": false,
-      "id": "copo.annotation.file_location",
+      "id": "ei.annotation.file_location",
       "show_in_table": false,
       "control": "text",
       "versions": [
@@ -131,7 +131,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": false,
-      "id": "copo.annotation.date_created",
+      "id": "ei.annotation.date_created",
       "show_in_table": true,
       "control": "datetime",
       "versions": [
@@ -149,7 +149,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": false,
-      "id": "copo.annotation.uid",
+      "id": "ei.annotation.uid",
       "show_in_table": false,
       "control": "uid",
       "versions": [
@@ -162,7 +162,7 @@
   "description": "",
   "configuration": {
     "type": "json",
-    "provider": "copo",
+    "provider": "ei",
     "ref": ""
   },
   "title": "Annotation schema mappings"

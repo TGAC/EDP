@@ -162,7 +162,7 @@
       "type": "string",
       "show_in_table": false,
       "hidden": "false",
-      "control": "copo-lookup2",
+      "control": "text",
       "create_new_item": true,
       "option_component": "source",
       "data_maxItems": 1,

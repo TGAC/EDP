@@ -5,7 +5,7 @@
       "deprecated": false,
       "type": "string",
       "ref": "",
-      "id": "copo.miappe.rooting.greenhouse.greenhouse_container_type",
+      "id": "ei.miappe.rooting.greenhouse.greenhouse_container_type",
       "show_in_table": true,
       "show_in_form": true,
       "control": "text",
@@ -20,7 +20,7 @@
       "deprecated": false,
       "type": "string",
       "ref": "",
-      "id": "copo.miappe.rooting.greenhouse.greenhouse_container_volume",
+      "id": "ei.miappe.rooting.greenhouse.greenhouse_container_volume",
       "show_in_table": true,
       "show_in_form": true,
       "control": "text",
@@ -35,7 +35,7 @@
       "deprecated": false,
       "type": "string",
       "ref": "",
-      "id": "copo.miappe.rooting.greenhouse.other_dimensions",
+      "id": "ei.miappe.rooting.greenhouse.other_dimensions",
       "show_in_table": true,
       "show_in_form": true,
       "control": "text",
@@ -50,7 +50,7 @@
   "title": "Greenhouse Rooting MIAPPE mappings",
   "configuration": {
     "type": "json",
-    "provider": "copo",
+    "provider": "ei",
     "ref": ""
   }
 }

@@ -8,7 +8,7 @@ import common.lookup.lookup as lkup
 from common.schemas.utils import data_utils as d_utils
 from django.conf import settings
 from common.utils import helpers
-from common.schemas.utils.cg_core.cg_schema_generator import CgCoreSchemas
+#from common.schemas.utils.cg_core.cg_schema_generator import CgCoreSchemas
 
 
 class DataFormats:
@@ -38,13 +38,13 @@ class DataFormats:
         self.dispatch = {
             'isa_xml': self.isa_xml_mapping,
             'isa_json': self.isa_json_mapping,
-            'copo_json': self.copo_json_mapping
+            'ei_json': self.ei_json_mapping
         }
 
     # generates template for UI rendering
     def generate_ui_template(self):
         # update cg core
-        CgCoreSchemas().process_schema()
+        #CgCoreSchemas().process_schema()
 
         new_list = []
         json_files_handle = self.get_mapping_files()
@@ -314,7 +314,7 @@ class DataFormats:
     def isa_json_mapping(self, arg_dict):
         return arg_dict['properties']
 
-    def copo_json_mapping(self, arg_dict):
+    def ei_json_mapping(self, arg_dict):
         # get reference to the configuration resource
         arm = arg_dict['configuration']['ref']
         new_list = arg_dict['properties']

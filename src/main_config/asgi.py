@@ -14,9 +14,9 @@ from channels.auth import AuthMiddlewareStack
 #from channels.sessions import SessionMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 from channels.routing import ProtocolTypeRouter, URLRouter
-import src.apps.copo_core.routing
+import src.apps.ei_core.routing
 from django.urls import path
-from src.apps.copo_core import consumers
+from src.apps.ei_core import consumers
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'src.main_config.settings.all')
 
@@ -26,7 +26,7 @@ application = ProtocolTypeRouter({
         AuthMiddlewareStack(
 
             URLRouter(
-                src.apps.copo_core.routing.websocket_urlpatterns
+                src.apps.ei_core.routing.websocket_urlpatterns
             )
         ),
     )

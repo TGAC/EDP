@@ -5,7 +5,6 @@ import json
 import pandas as pd
 from uuid import uuid4
 from bson import ObjectId
-from common.dal.mongo_util import cursor_to_list
 from django.urls import reverse
 from django.contrib.auth.models import User
 from common.lookup.lookup import HTML_TAGS
@@ -14,8 +13,8 @@ import common.schemas.utils.data_utils as d_utils
 from common.schema_versions.lookup.dtol_lookups import TOL_PROFILE_TYPES_FULL
 from .copo_lookup_service import COPOLookup
 from common.dal.copo_base_da import DataSchemas
-from src.apps.copo_core.models import SequencingCentre
-from common.dal.copo_da import DAComponent,  DataFile, Description
+#from src.apps.ei_core.models import SequencingCentre
+from common.dal.copo_da import DAComponent,  DataFile
 from common.dal.profile_da import Profile, ProfileInfo
 from common.dal.submission_da import Submission
 # from hurry.filesize import size as hurrysize
@@ -72,7 +71,7 @@ def get_providers_orcid_first():
     return [{"id":o.id, "name":o.name} for o in result]
 '''
 
-
+"""
 def get_element_by_id(field_id):
     elem = {}
     out_list = get_fields_list(field_id)
@@ -82,7 +81,7 @@ def get_element_by_id(field_id):
             elem = f
             break
     return elem
-
+"""
 
 def trim_parameter_value_label(label):
     if "Parameter Value" in label:
@@ -111,10 +110,11 @@ def get_control_options(f, profile_id=None):
     # using callbacks. Callbacks, essentially, define functions that resolve options data
 
     option_values = list()
-
+ 
     if f.get("control", "text") in ["copo-lookup", "copo-lookup2"]:
         return COPOLookup(accession=f.get('data', str()),
                           data_source=f.get('data_source', str()), profile_id=profile_id).broker_component_search()['result']
+ 
 
     if "option_values" not in f:  # you shouldn't be here
         return option_values
@@ -123,10 +123,11 @@ def get_control_options(f, profile_id=None):
     if isinstance(f["option_values"], list) and f["option_values"]:
         return f["option_values"]
 
+ 
     # resolve option values from a data source
     if f.get("data_source", str()):
         return COPOLookup(data_source=f.get('data_source', str()), profile_id=profile_id).broker_data_source()
-
+ 
     if isinstance(f["option_values"], dict):
         if f.get("option_values", dict()).get("callback", dict()).get("function", str()):
             call_back_function = f.get("option_values", dict()).get(
@@ -388,23 +389,6 @@ def generate_server_side_table_records(profile_id=str(), da_object=None, request
     # retrieve and process records
     filter_by = dict()
 
-    if da_object.component == "datafile":
-        # get all active bundles in the profile
-        existing_bundles = Description().get_all_records_columns(projection=dict(_id=1),
-                                                                 filter_by=dict(profile_id=profile_id,
-                                                                                component=component))
-        existing_bundles = [str(x["_id"]) for x in existing_bundles]
-        records_total = da_object.get_collection_handle().count_documents({"$and": [
-            {"profile_id": profile_id, 'deleted': helpers.get_not_deleted_flag()},
-            {"$or": [
-                {"description_token": {"$in": [None, False, ""]}},
-                {"description_token": {"$nin": existing_bundles}}]}
-        ]})
-
-        filter_by = {"$or": [
-            {"description_token": {"$in": [None, False, ""]}},
-            {"description_token": {"$nin": existing_bundles}}]}
-
     # get and filter schema elements based on displayable columns
     schema = [x for x in da_object.get_schema().get(
         "schema_dict") if x.get("show_in_table", True)]
@@ -547,311 +531,6 @@ def generate_table_records(profile_id=str(), da_object=None, record_id=str(), ad
                        )
 
     return return_dict
-
-'''
-# @register.filter("generate_submissions_records")
-def generate_submissions_records(profile_id=str(), component=str(), record_id=str()):
-    # function generates component records for building an UI table - please note that for effective tabular display,
-    # all array and object-type fields (e.g., characteristics) are deferred to sub-table display.
-    # please define such in the schema as "show_in_table": false and "show_as_attribute": true
-
-    data_set = list()
-
-    # build db column projection
-    submission_projection = [('date_modified', 1),
-                             ('complete', 1), ('deleted', 1)]
-    repository_projection = [('name', 1), ('type', 1)]
-
-    schema = [x for x in Submission().get_schema().get("schema_dict") if
-              x["id"].split(".")[-1] in [y[0] for y in submission_projection]]
-
-    # repository_schema = [x for x in Repository().get_schema().get("schema_dict") if
-    #                     x["id"].split(".")[-1] in [y[0] for y in repository_projection]]
-
-    # specify filtering
-    filter_conditions = [dict(deleted=helpers.get_not_deleted_flag())]
-
-    # add profile
-    if profile_id:
-        filter_conditions.append(dict(profile_id=profile_id))
-
-    if record_id:
-        filter_conditions.append(dict(_id=ObjectId(str(record_id))))
-
-    # specify projection
-    query_projection = {
-        "deleted": 1,
-        "date_modified": 1,
-        "complete": 1,
-        "repository_docs.name": 1,
-        "description_docs.name": 1,
-        "repository_docs.type": 1,
-        "profile_id": 1
-    }
-
-    doc = Submission().get_collection_handle().aggregate(
-        [
-            {"$addFields": {
-                "destination_repo_converted": {
-                    "$convert": {
-                        "input": "$destination_repo",
-                        "to": "objectId",
-                        "onError": 0
-                    }
-                },
-                "description_token_converted": {
-                    "$convert": {
-                        "input": "$description_token",
-                        "to": "objectId",
-                        "onError": 0
-                    }
-                }
-            }
-            },
-            {
-                "$lookup":
-                    {
-                        "from": "RepositoryCollection",
-                        "localField": "destination_repo_converted",
-                        "foreignField": "_id",
-                        "as": "repository_docs"
-                    }
-            },
-            {
-                "$lookup":
-                    {
-                        "from": "DescriptionCollection",
-                        "localField": "description_token_converted",
-                        "foreignField": "_id",
-                        "as": "description_docs"
-                    }
-            },
-            {
-                "$project": query_projection
-            },
-            {
-                "$match": {"$and": filter_conditions}
-            },
-            {"$sort": {"date_modified": 1}}
-        ])
-
-    records = cursor_to_list(doc)
-
-    for indx, rec in enumerate(records):
-        new_data = dict()
-        new_data["s_n"] = indx
-
-        for f in schema:
-            f_id = f["id"].split(".")[-1]
-            new_data[f_id] = resolve_control_output(rec, f)
-
-        new_data["record_id"] = str(rec["_id"])
-        new_data["DT_RowId"] = "row_" + str(rec["_id"])
-
-        try:
-            new_data["bundle_name"] = rec['description_docs'][0].get(
-                'name', str())
-        except (IndexError, AttributeError) as error:
-            new_data["bundle_name"] = str()
-
-        try:
-            repository_record = rec['repository_docs'][0]
-        except (IndexError, AttributeError) as error:
-            repository_record = dict()
-        """
-        for f in repository_schema:
-            f_id = f["id"].split(".")[-1]
-            new_data["repository_" + f_id] = resolve_control_output(repository_record, f)
-        """
-        data_set.append(new_data)
-
-    return dict(dataSet=data_set, )
-
-@register.filter("generate_repositories_records")
-def generate_repositories_records(component=str(), record_id=str()):
-    # function generates component records for building an UI table - please note that for effective tabular display,
-    # all array and object-type fields (e.g., characteristics) are deferred to sub-table display.
-    # please define such in the schema as "show_in_table": false and "show_as_attribute": true
-
-    data_set = list()
-
-    # get and filter schema elements based on displayable columns
-    schema = [x for x in Repository().get_schema().get("schema_dict") if x.get("show_in_table", True)]
-
-    # build db column projection
-    projection = [(x["id"].split(".")[-1], 1) for x in schema]
-
-    filter_by = dict()
-    if record_id:
-        filter_by["_id"] = ObjectId(str(record_id))
-
-    # retrieve and process records
-    records = Repository().get_all_records_columns(sort_by="date_modified", sort_direction=1,
-                                                   projection=dict(projection),
-                                                   filter_by=filter_by)
-
-    for indx, rec in enumerate(records):
-        new_data = dict()
-        new_data["s_n"] = indx
-        new_data["record_id"] = str(rec["_id"])
-        new_data["DT_RowId"] = "row_" + str(rec["_id"])
-
-        for f in schema:
-            f_id = f["id"].split(".")[-1]
-            new_data[f_id] = resolve_control_output(rec, f)
-
-        data_set.append(new_data)
-
-    return dict(dataSet=data_set, )
-'''
-'''
-@register.filter("generate_managed_repositories")
-def generate_managed_repositories(component=str(), user_id=str()):
-    # function generates component records for building an UI table - please note that for effective tabular display,
-    # all array and object-type fields (e.g., characteristics) are deferred to sub-table display.
-    # please define such in the schema as "show_in_table": false and "show_as_attribute": true
-
-    data_set = list()
-    records = list()
-
-    # get and filter schema elements based on displayable columns
-    schema = [x for x in Repository().get_schema().get("schema_dict") if x.get("show_in_table", True)]
-
-    # build db column projection
-    projection = [(x["id"].split(".")[-1], 1) for x in schema]
-
-    filter_by = dict()
-
-    user = User.objects.get(pk=user_id)
-    user_repo_ids = user.userdetails.repo_manager
-    user_repo_ids = {ObjectId(x) for x in user_repo_ids}
-
-    if user_repo_ids:
-        filter_by["_id"] = {"$in": list(user_repo_ids)}
-
-        # retrieve and process records
-        records = Repository().get_all_records_columns(sort_by="date_modified", sort_direction=1,
-                                                       projection=dict(projection),
-                                                       filter_by=filter_by)
-
-    for indx, rec in enumerate(records):
-        new_data = dict()
-        new_data["s_n"] = indx
-        new_data["record_id"] = str(rec["_id"])
-        new_data["DT_RowId"] = "row_" + str(rec["_id"])
-
-        for f in schema:
-            f_id = f["id"].split(".")[-1]
-            new_data[f_id] = resolve_control_output(rec, f)
-
-        data_set.append(new_data)
-
-    return dict(dataSet=data_set, )
-'''
-'''
-@register.filter("generate_copo_table_data")
-def generate_copo_table_data(profile_id=str(), component=str()):
-    # This method generates the 'json' for building an UI table
-
-    # instantiate data access object
-    da_object = DAComponent(profile_id, component)
-
-    # get records
-    records = da_object.get_all_records()
-
-    columns = list()
-    dataSet = list()
-
-    displayable_fields = list()
-
-    # headers
-    for f in da_object.get_schema().get("schema_dict"):
-        if f.get("show_in_table", True):
-            displayable_fields.append(f)
-            columns.append(dict(title=f["label"]))
-
-    # extra 'blank' header for record actions column
-    columns.append(dict(title=str()))
-
-    # data
-    for rec in records:
-        row = list()
-        for df in displayable_fields:
-            row.append(resolve_control_output(rec, df))
-
-        # last element in a row exposes the id of the record
-        row.append(str(rec["_id"]))
-        dataSet.append(row)
-
-    # define action buttons
-    button_templates = d_utils.get_button_templates()
-
-    common_btn_dict = dict(row_btns=[button_templates['edit_row'], button_templates['delete_row']],
-                           global_btns=[button_templates['delete_global']])
-
-    sample_info = copy.deepcopy(button_templates['info_row'])
-    sample_info["text"] = "Sample Attributes"
-
-    buttons_dict = dict(publication=common_btn_dict,
-                        person=common_btn_dict,
-                        sample=dict(row_btns=[sample_info, button_templates['edit_row'],
-                                              button_templates['delete_row']],
-                                    global_btns=[button_templates['add_new_samples_global'],
-                                                 button_templates['delete_global']]),
-                        source=common_btn_dict,
-                        profile=common_btn_dict,
-                        annotation=common_btn_dict,
-                        metadata_template=common_btn_dict,
-                        datafile=dict(
-                            row_btns=[button_templates['info_row'], button_templates['describe_row'],
-                                      button_templates['delete_row']],
-                            global_btns=[button_templates['describe_global'],
-                                         button_templates['undescribe_global']]),
-                        assembly=common_btn_dict,
-                        seqannotation=common_btn_dict
-                        )
-
-    action_buttons = dict(row_btns=buttons_dict.get(component).get("row_btns"),
-                          global_btns=buttons_dict.get(
-                              component).get("global_btns")
-                          )
-
-    return_dict = dict(columns=columns,
-                       dataSet=dataSet,
-                       table_id=table_id_dict.get(component, str()),
-                       action_buttons=action_buttons
-                       )
-
-    return return_dict
-
-'''
-'''
-def get_record_data(record_object=dict(), component=str()):
-    # This function is targeted for tabular record display for a single row data
-
-    schema = DAComponent(component=component).get_schema().get("schema_dict")
-
-    row = list()
-
-    for f in schema:
-        if f.get("show_in_table", True):
-            if "dtol" in f["specifications"]:
-                row.append(record_object[(f.id.split(".")[-1])])
-            else:
-                row.append(resolve_control_output(record_object, f))
-
-    # last element in a row exposes the id of the record
-    row.append(str(record_object["_id"]))
-
-    return_dict = dict(row_data=row,
-                       table_id=table_id_dict.get(component, str())
-                       )
-
-    return return_dict
-'''
-
-# @register.filter("generate_copo_profiles_data")
-
 
 def generate_copo_profiles_data(profiles=list()):
     data_set = list()
@@ -1420,9 +1099,6 @@ def get_resolver(data, elem):
     if not data:
         return ""
     func_map = dict()
-    func_map["copo-characteristics"] = resolve_copo_characteristics_data
-    func_map["copo-environmental-characteristics"] = resolve_environmental_characteristics_data
-    func_map["copo-phenotypic-characteristics"] = resolve_phenotypic_characteristics_data
     func_map["copo-comment"] = resolve_copo_comment_data
     func_map["copo-multi-select"] = resolve_copo_multi_select_data
     func_map["copo-multi-select2"] = resolve_copo_multi_select_data
@@ -1433,7 +1109,6 @@ def get_resolver(data, elem):
     func_map["copo-lookup2"] = resolve_copo_lookup2_data
     func_map["select"] = resolve_select_data
     func_map["copo-button-list"] = resolve_select_data
-    func_map["ontology term"] = resolve_ontology_term_data
     func_map["copo-select"] = resolve_copo_select_data
     func_map["datetime"] = resolve_datetime_data
     func_map["datafile-description"] = resolve_description_data
@@ -1556,54 +1231,6 @@ def resolve_description_data(data, elem):
     return resolve_display_data(datafile_items, datafile_attributes)
 
 
-def resolve_copo_characteristics_data(data, elem):
-    schema = d_utils.get_copo_schema("material_attribute_value")
-
-    resolved_data = list()
-
-    for f in schema:
-        if f.get("show_in_table", True):
-            a = dict()
-            if f["id"].split(".")[-1] in data:
-                a[f["id"].split(
-                    ".")[-1]] = resolve_ontology_term_data(data[f["id"].split(".")[-1]], elem)
-                resolved_data.append(a)
-
-    return resolved_data
-
-
-def resolve_environmental_characteristics_data(data, elem):
-    schema = d_utils.get_copo_schema("environment_variables")
-
-    resolved_data = list()
-
-    for f in schema:
-        if f.get("show_in_table", True):
-            a = dict()
-            if f["id"].split(".")[-1] in data:
-                a[f["id"].split(
-                    ".")[-1]] = resolve_ontology_term_data(data[f["id"].split(".")[-1]], elem)
-                resolved_data.append(a)
-
-    return resolved_data  # turn this casting off after merge
-
-
-def resolve_phenotypic_characteristics_data(data, elem):
-    schema = d_utils.get_copo_schema("phenotypic_variables")
-
-    resolved_data = list()
-
-    for f in schema:
-        if f.get("show_in_table", True):
-            a = dict()
-            if f["id"].split(".")[-1] in data:
-                a[f["id"].split(
-                    ".")[-1]] = resolve_ontology_term_data(data[f["id"].split(".")[-1]], elem)
-                resolved_data.append(a)
-
-    return resolved_data  # turn this casting off after merge
-
-
 def resolve_copo_comment_data(data, elem):
     schema = d_utils.get_copo_schema("comment")
 
@@ -1720,24 +1347,6 @@ def resolve_select_data(data, elem):
     return resolved_value
 
 
-def resolve_ontology_term_data(data, elem):
-    schema = DataSchemas("COPO").get_ui_template().get(
-        "copo").get("ontology_annotation").get("fields")
-
-    resolved_data = list()
-
-    for f in schema:
-        if f.get("show_in_table", True):
-            if f["id"].split(".")[-1] in data:
-                resolved_data.append(data[f["id"].split(".")[-1]])
-
-    if not resolved_data:
-        resolved_data = str()
-    elif len(resolved_data) == 1:
-        resolved_data = resolved_data[0]
-    return resolved_data
-
-
 def resolve_copo_select_data(data, elem):
     return data
 
@@ -1833,7 +1442,7 @@ def lookup_info(val):
         return lkup.UI_INFO[val]
     return ""
 
-
+"""
 def get_fields_list(field_id):
     key_split = field_id.split(".")
 
@@ -1844,7 +1453,7 @@ def get_fields_list(field_id):
             new_dict = new_dict[kp]
 
     return new_dict["fields"]
-
+"""
 
 # @register.filter("id_to_class")
 def id_to_class(val):

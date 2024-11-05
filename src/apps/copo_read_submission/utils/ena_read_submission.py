@@ -15,7 +15,7 @@ from common.utils.helpers import notify_read_status, get_env, get_datetime, json
 from common.schemas.utils.data_utils import simple_utc
 from django.conf import settings
 from common.ena_utils import generic_helper as ghlper
-from common.dal.copo_da import EnaChecklist, EnaFileTransfer
+from common.dal.copo_da import EIChecklist, EnaFileTransfer
 from common.dal.sample_da import Sample
 from common.dal.submission_da import Submission
 from common.lookup.lookup import SRA_SETTINGS
@@ -588,7 +588,7 @@ class EnaReads:
                 etree.SubElement(sample_attribute_node, 'TAG').text = "ENA-CHECKLIST"
                 etree.SubElement(sample_attribute_node, 'VALUE').text = checklist_id
 
-                checklist = EnaChecklist().get_collection_handle().find_one({"primary_id": checklist_id})
+                checklist = EIChecklist().get_collection_handle().find_one({"primary_id": checklist_id})
                 if checklist:
                    fields = checklist["fields"]
                    key_mapping = { key :  value["synonym"] if "synonym" in value.keys() else value["name"] for key, value in fields.items() }

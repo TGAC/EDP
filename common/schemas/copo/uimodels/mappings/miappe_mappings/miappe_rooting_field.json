@@ -8,7 +8,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": true,
-      "id": "copo.miappe.rooting.field.plot_size",
+      "id": "ei.miappe.rooting.field.plot_size",
       "show_in_table": true,
       "control": "text",
       "versions": [
@@ -25,7 +25,7 @@
       "deprecated": false,
       "default_value": "",
       "show_in_form": true,
-      "id": "copo.miappe.rooting.field.sowing_density",
+      "id": "ei.miappe.rooting.field.sowing_density",
       "show_in_table": true,
       "control": "text",
       "versions": [
@@ -39,7 +39,7 @@
   "description": "Attributes for COPO Profile schema.",
   "configuration": {
     "type": "json",
-    "provider": "copo",
+    "provider": "ei",
     "ref": ""
   }
 }

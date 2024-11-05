@@ -4,7 +4,6 @@ import sys
 from bson.errors import InvalidId
 
 from src.apps.api.utils import get_return_template, extract_to_template, finish_request
-from common.dal.copo_da import Person
 from common.lookup.lookup import API_ERRORS
 
 

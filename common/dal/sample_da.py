@@ -8,7 +8,7 @@ from common.schema_versions.lookup.dtol_lookups import EXCLUDED_FIELDS_FOR_GET_B
 from pymongo.collection import ReturnDocument
 from common.utils import helpers
 from bson.objectid import ObjectId
-from src.apps.copo_core.models import SequencingCentre
+#from src.apps.ei_core.models import SequencingCentre
 from .copo_base_da import DAComponent, handle_dict
 import shortuuid
 import pandas as pd
@@ -930,6 +930,7 @@ class Sample(DAComponent):
                 s["copo_profile_title"] = profile_title
         return samples
     
+    """
     def get_by_sequencing_centre(self, sequencing_centre, isQueryByManifestLevel=False):
         from .profile_da import Profile
 
@@ -978,7 +979,8 @@ class Sample(DAComponent):
             out = cursor_to_list(self.get_collection_handle().find(filter))
 
         return out
-    
+    """
+        
     def get_profileID_by_project_and_manifest_id(self, projects, manifest_ids):
         return cursor_to_list(self.get_collection_handle().aggregate(
             [{"$match": {"tol_project": {"$in": projects}, "manifest_id": {"$in": manifest_ids}}},

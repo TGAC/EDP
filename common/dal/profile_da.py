@@ -151,23 +151,17 @@ class Profile(DAComponent):
         return out
 
     def save_record(self, auto_fields=dict(), **kwargs):
-        from .copo_da import Person
-        from .sample_da import Sample
-        new_record = False
-        profile_type = auto_fields.get("copo.profile.type", "")
-
-        from src.apps.copo_core.models import ProfileType
+        from src.apps.ei_core.models import ProfileType
         rec = {"status":"success", "message": ""}
     
         if not kwargs.get("target_id", str()):
-            new_record = True
             for k, v in dict(
                     copo_id=helpers.get_copo_id(),
                     user_id=helpers.get_user_id()
             ).items():
                 auto_fields[self.get_qualified_field(k)] = v
 
-        type = auto_fields.get("copo.profile.type", "")
+        type = auto_fields.get("ei.profile.type", "")
         profile_type_def = ProfileType.objects.filter(type=type).first()
 
         if profile_type_def:
@@ -197,9 +191,6 @@ class Profile(DAComponent):
                     rec["status"] =  result.get("status", "success")
                     rec["message"] = result.get("message", "")
 
-            # trigger after save actions
-            if not kwargs.get("target_id", str()):
-                Person(profile_id=str(rec["_id"])).create_sra_person()
 
         return rec
 
@@ -304,7 +295,7 @@ class Profile(DAComponent):
 
         profile_id = kwargs.get("target_id","")
         is_error_found = False
-        profile_type = auto_fields.get("copo.profile.type", "")
+        profile_type = auto_fields.get("ei.profile.type", "")
 
         if profile_id:
             profile = self.get_record(profile_id)
@@ -371,7 +362,7 @@ class Profile(DAComponent):
                 # Filter schema based on manfest type and manifest version
                 f_specifications = f.get("specifications", "")
 
-                if f.get("id", "") == "copo.profile.type":
+                if f["id"].split(".")[-1] == "ei.profile.type":
                     f["default_value"] = profile_type
                 if not f_specifications:
                     result.append(f)

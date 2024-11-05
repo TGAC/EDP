@@ -9,7 +9,6 @@ from .copo_base_da import DAComponent
 import pymongo.errors as pymongo_errors
 from bson import ObjectId, json_util
 from django.conf import settings
-from common.schemas.utils.cg_core.cg_schema_generator import CgCoreSchemas
 from datetime import datetime, timedelta
  
 lg =  Logger()
@@ -221,53 +220,6 @@ class Submission(DAComponent):
 
         return result
 
-    def get_submission_metadata(self, submission_id=str()):
-        """
-        function returns the metadata associated with this submission
-        :param submission_id:
-        :return:
-        """
-
-        result = dict(
-            status='error', message="Metadata not found or unspecified procedure.", meta=list())
-
-        if not submission_id:
-            return dict(status='error', message="Submission record identifier not found!", meta=list())
-
-        try:
-            repository_type = self.get_repository_type(
-                submission_id=submission_id)
-        except Exception as e:
-            repository_type = str()
-            lg.exception(e)
-
-        if not repository_type:
-            return dict(status='error', message="Submission repository unknown!", meta=list())
-
-        if repository_type in ["dataverse", "ckan", "dspace"]:
-            query_projection = dict()
-
-            for x in self.get_schema().get("schema_dict"):
-                query_projection[x["id"].split(".")[-1]] = 0
-
-            query_projection["bundle"] = {"$slice": 1}
-
-            submission_record = self.get_collection_handle().find_one({"_id": ObjectId(submission_id)},
-                                                                      query_projection)
-
-            if len(submission_record["bundle"]):
-                items = CgCoreSchemas().extract_repo_fields(
-                    str(submission_record["bundle"][0]), repository_type)
-
-                if repository_type == "dataverse":
-                    items.append({"dc": "dc.relation", "copo_id": "submission_id", "vals": "copo:" + str(submission_id),
-                                  "label": "COPO Id"})
-
-                return dict(status='success', message="", meta=items)
-        else:
-            pass  # todo: if required for other repo, can use metadata from linked bundle
-
-        return result
 
     '''
     def lift_embargo(self, submission_id=str()):

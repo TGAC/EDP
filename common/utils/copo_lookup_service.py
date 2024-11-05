@@ -1,7 +1,5 @@
 __author__ = 'etuka'
 
-import pandas as pd
-from bson import ObjectId
 from common.dal.mongo_util import cursor_to_list, get_collection_ref
 from common.lookup import lookup
 from common.lookup.resolver import RESOLVER
@@ -32,6 +30,7 @@ class COPOLookup:
 
     def broker_component_search(self):
         dispatcher = {
+            """
             'agrovoclabels': self.get_lookup_type,
             'countrieslist': self.get_lookup_type,
             'mediatypelabels': self.get_lookup_type,
@@ -44,6 +43,7 @@ class COPOLookup:
             'study_lookup': self.get_studies,
             'experiment_lookup': self.get_experiments,
             'sample_lookup': self.get_samples
+            """
         }
 
         result = []
@@ -96,7 +96,8 @@ class COPOLookup:
                 records = cursor_to_list(Lookups.find(filter_by, projection))
 
         return records
-
+   
+    '''
     def get_samplesource(self):
         """
         lookup sources related to a sample
@@ -157,7 +158,8 @@ class COPOLookup:
             result = df.to_dict('records')
 
         return result
-
+    '''
+    '''
     def cg_dependency_lookup(self):
         """
         lookup for cgcore dependent components
@@ -234,7 +236,8 @@ class COPOLookup:
             result = df.to_dict('records')
 
         return result
-
+    '''
+    '''
     def get_isasamples(self):
         """
         lookup for ISA-based (COPO standard) samples
@@ -294,7 +297,8 @@ class COPOLookup:
             result = df.to_dict('records')
 
         return result
-
+    '''
+    '''
     def get_allsamples(self):
         """
         lookup for all samples irrespective of sample type
@@ -354,6 +358,7 @@ class COPOLookup:
             result = df.to_dict('records')
 
         return result
+    '''
 
     def format_description(self, desc):
         html = """<table style="width:100%">"""
@@ -365,6 +370,7 @@ class COPOLookup:
 
         return html
     
+    '''
     def get_runs(self):
         from common.dal.submission_da import Submission
         existing_sub = Submission().get_records_by_field("profile_id", self.profile_id)
@@ -390,7 +396,8 @@ class COPOLookup:
 
         result = df.to_dict('records')
         return result
-
+    '''
+    '''
     def get_studies(self):
         from common.dal.submission_da import Submission
         existing_sub = Submission().get_records_by_field("profile_id", self.profile_id)
@@ -417,7 +424,8 @@ class COPOLookup:
 
         result = df.to_dict('records')
         return result
-
+    '''
+    '''
     def get_experiments(self):
         from common.dal.submission_da import Submission
         existing_sub = Submission().get_records_by_field("profile_id", self.profile_id)
@@ -441,7 +449,8 @@ class COPOLookup:
 
         result = df.to_dict('records')
         return result
-
+    '''
+    '''
     def get_samples(self):
         from common.dal.submission_da import Submission
         existing_sub = Submission().get_records_by_field("profile_id", self.profile_id)
@@ -464,3 +473,4 @@ class COPOLookup:
 
         result = df.to_dict('records')
         return result
+    '''

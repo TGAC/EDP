@@ -262,14 +262,15 @@ def map_to_dict(x, y):
         out[el] = y[idx]
     return out
 
+"""
 def get_users_seq_centres():
-    from src.apps.copo_core.models import SequencingCentre
+    from src.apps.ei_core.models import SequencingCentre
     user = ThreadLocal.get_current_user()
     seq_centres = SequencingCentre.objects.filter(users=user)
     return seq_centres
-
+"""
 def get_users_associated_profile_checkers():
-    from src.apps.copo_core.models import AssociatedProfileType
+    from src.apps.ei_core.models import AssociatedProfileType
     user = ThreadLocal.get_current_user()
     seq_centres = AssociatedProfileType.objects.filter(users=user)
     return seq_centres

@@ -11,7 +11,7 @@ RESOLVER['schemas_copo'] = os.path.join(web_copo, 'schemas', 'copo', 'dbmodels')
 RESOLVER['copo_drop_downs'] = os.path.join(web_copo, 'lookup', 'drop_downs')
 RESOLVER['isa_json_db_models'] = os.path.join(web_copo, 'schemas', 'copo', 'dbmodels', 'isa', 'json')
 RESOLVER['uimodels_copo'] = os.path.join(web_copo, 'schemas', 'copo', 'uimodels')
-RESOLVER['cg_core_schemas'] = os.path.join(web_copo, 'schemas', 'copo', 'uimodels', "mappings", "cgcore_mappings")
+#RESOLVER['cg_core_schemas'] = os.path.join(web_copo, 'schemas', 'copo', 'uimodels', "mappings", "cgcore_mappings")
 RESOLVER['schemas_generic'] = os.path.join(web_copo, 'schemas', 'generic')
 RESOLVER['api_return_templates'] = os.path.join(settings.BASE_DIR, 'src','apps','api', 'return_templates')
 

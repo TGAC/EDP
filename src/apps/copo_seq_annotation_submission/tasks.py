@@ -1,6 +1,6 @@
 from src.celery import app
 from common.utils.logger import Logger
-from src.apps.copo_core.tasks import only_one, CopoBaseClassForTask
+from src.apps.ei_core.tasks import only_one, CopoBaseClassForTask
 from .utils import EnaAnnotation as enaAnnotation
 
  

@@ -1,11 +1,12 @@
 version: "3.9"
 services:
   new_web:
-    image: debbyku/copo_new:v1.0.u2204
+    image: debbyku/copo_new:v2.0.u2204
     command: >
-      bash -c "code-server serve-local --disable-telemetry --auth none --host 0.0.0.0 --port 8101"
+      sleep infinity
+      #bash -c "code-server serve-local --disable-telemetry --auth none --host 0.0.0.0 --port 8101"
     ports:
-      - "8001:8001"
+      - "8000:8000"
       - "8101:8101"
     volumes:
       - /Users/zef22hak/development/COPO_refactoring/COPO-production:/copo
@@ -44,7 +45,7 @@ services:
       - MAIL_USERNAME=eidata@nbi.ac.uk
       - ALLOWED_HOSTS=
       - PUBLIC_NAME_SERVICE=https://id.tol.sanger.ac.uk/api/v2/
-      - ENA_ENDPOINT_REPORT=https://wwwdev.ebi.ac.uk/ena/submit/report/samples
+      - ENA_ENDPOINT_REPORT=https://wwwdev.ebi.ac.uk/ena/submit/report/
       - ASPERA_PATH=/root/.aspera/cli
       - BIOIMAGE_PATH_FILE=/run/secrets/copo_bioimage_path
       - BIOIMAGE_SERVER=bsaspera_w@hx-fasp-1.ebi.ac.uk
@@ -53,14 +54,15 @@ services:
       - ECS_ENDPOINT=http://ei-copo.obj-data.nbi.ac.uk
       - SELENIUM_TEST_USERNAME=debby.ku@earlham.ac.uk
       - SELENIUM_TEST_PASSWORD=Iam1testUser
-      - B2DROP_PERMITS=/copo/b2drop/permits
     depends_on:
       - redis
       - postgres
       - mongo
     networks:
-      - copo-frontend-network
-      - copo-backend-network
+      default:
+        aliases:
+          - copo-new.cyverseuk.org
+      copo-backend-network:
     deploy:
       replicas : 1
       #endpoint_mode: dnsrr
@@ -95,7 +97,7 @@ services:
   redis:
     image: redis:6.2.8
     networks:
-      - copo-frontend-network
+      - copo-backend-network
     deploy:
       replicas: 1
       endpoint_mode: dnsrr
@@ -190,16 +192,89 @@ services:
         delay: 10s
       resources:
         limits:
-          cpus: "0.8"
-          memory: 2GB
+          cpus: "2"
+          memory: 3GB
         reservations:
           cpus: "0.4"
           memory: 512mb
-
+  browser:
+    image: debbyku/browserless.chrome
+    networks:
+      - default
+      - copo-backend-network
+    ports:
+     - "3000:3000"
+    environment:
+      - COPO_WEB_USER=debby.ku@earlham.ac.uk
+      - COPO_WEB_USER_PW=Iam1testUser
+      - COPO_WEB_URL=http://copo-new.cyverseuk.org:8000
+      - BROWSERLESS_HTTP_URL=http://copo_browser:3000
+      - BROWSERLESS_WS_URL=ws://copo_browser:3000
+      - KEEP_ALIVE=true
+      - PREBOOT_CHROME=true
+      - MAX_CONCURRENT_SESSIONS=5
+      - MAX_QUEUE_LENGTH=10
+      - PREBOOT_QUANTITY=2
+      - CHROME_REFRESH_TIME=1800000
+      - BROWSERLESS_TRACKING_ID=UA-123456789-1
+      - CHROME_REFRESH_TIME_RANDOMNESS=10000
+      - CHROME_ARGS=--no-sandbox,--keepalive=30000,--disable-dev-shm-usage,--disable-gpu,--disable-setuid-sandbox,--disable-software-rasterizer,--disable-dev-shm-usage,--disable-accelerated-2d-canvas,--disable-gpu-sandbox,--disable-infobars,--disable-notifications,--disable-extensions,--disable-web-security,--disable-features=IsolateOrigins,site-per-process,--disable-site-isolat
+    deploy:
+      replicas: 1
+      #endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.web-service==true"
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1GB
+        reservations:
+          cpus: "0.4"
+          memory: 512mb
+  edp:
+    image: python:3.10.13-bullseye
+    command: sleep infinity
+    networks: 
+      - copo-backend-network
+      - common-network
+    volumes:
+      - /Users/zef22hak/development/EDP:/EDP
+    environment:
+      - SAPIOURL=https://earlham-test.exemplarlims.com/webservice/api
+      - SAPIOGUID=08118b8d-4f43-4c09-9c87-7342cb7ce5ed
+      - SAPIOTOKEN=377gywjzhgr10lgvp5tysvhmxutt9ke821eqgixyrpkxp2zo2j
+      - ZENODOURL=https://zenodo.org/api
+      - ZENODOTOKEN=EiSk26ncbosa3yHyxLk6qAbu8kkoeRdIpPEDr4rdfxIBjxej61irXDzQN29e
+    deploy:
+      replicas: 1
+      #endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.backup-service==true"
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1GB
+        reservations:
+          cpus: "0.4"
+          memory: 512mb
 networks:
   copo-backend-network:
     external: true
   copo-frontend-network:
+    external: true
+  common-network:
     external: true
 secrets:
   copo_web_secret_key:

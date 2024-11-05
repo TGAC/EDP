@@ -5,7 +5,7 @@
       "deprecated": false,
       "type": "string",
       "ref": "",
-      "id": "copo.duration.years",
+      "id": "ei.duration.years",
       "show_in_table": true,
       "show_in_form": true,
       "control": "text",
@@ -20,7 +20,7 @@
       "deprecated": false,
       "type": "string",
       "ref": "",
-      "id": "copo.duration.months",
+      "id": "ei.duration.months",
       "show_in_table": true,
       "show_in_form": true,
       "control": "text",
@@ -35,7 +35,7 @@
       "deprecated": false,
       "type": "string",
       "ref": "",
-      "id": "copo.duration.days",
+      "id": "ei.duration.days",
       "show_in_table": true,
       "show_in_form": true,
       "control": "text",
@@ -49,7 +49,7 @@
   "description": "Schema to create a duration object",
   "configuration": {
     "type": "json",
-    "provider": "copo",
+    "provider": "ei",
     "ref": ""
   },
   "title": "Duration mappings"

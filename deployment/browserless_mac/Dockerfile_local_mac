@@ -1,0 +1,16 @@
+FROM browserless/chrome:1.61-puppeteer-1.20.0
+
+ENV PYTHONUNBUFFERED 1
+
+USER root
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \ 
+    libc6-amd64-cross && \
+    ln -s /usr/x86_64-linux-gnu/lib64/ /lib64 && \
+    ln -s /usr/x86_64-linux-gnu/lib /lib/x86_64-linux-gnu && \
+    ln -s /lib/aarch64-linux-gnu/libm-2.31.so /lib/libm.so.6 
+
+ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib64:/usr/x86_64-linux-gnu/lib"
+
+USER blessuser
+
+CMD ["./start.sh"]

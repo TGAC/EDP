@@ -10,7 +10,7 @@ from .utils import EnaAnnotation
 from common.s3.s3Connection import S3Connection
 from django.forms import formset_factory
 from functools import partial, wraps
-from src.apps.copo_core.views import web_page_access_checker
+from src.apps.ei_core.views import web_page_access_checker
 
 
 @web_page_access_checker

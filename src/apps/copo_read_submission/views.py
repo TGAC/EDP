@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 import json
 import subprocess
-from common.dal.copo_da import  DataFile, EnaChecklist
+from common.dal.copo_da import  DataFile, EIChecklist
 from common.dal.submission_da import Submission
 from common.dal.profile_da import Profile
 from common.dal.sample_da import Sample, Source
@@ -22,13 +22,13 @@ from common.ena_utils import generic_helper as ghlper
 import inspect
 from common.validators.validator import Validator
 from .utils.ena_validator import ena_seq_validators as required_validators
-from common.ena_utils.EnaChecklistHandler import EnaCheckListSpreadsheet, write_manifest
+from common.ena_utils.EIChecklistHandler import EICheckListSpreadsheet, write_manifest
 
 from common.utils.helpers import get_datetime, get_not_deleted_flag,map_to_dict
 from .utils import ena_read  
 from io import BytesIO
-from src.apps.copo_core.views import web_page_access_checker
-from src.apps.copo_core.models import ProfileType
+from src.apps.ei_core.views import web_page_access_checker
+from src.apps.ei_core.models import ProfileType
 
 l = Logger()
 
@@ -38,7 +38,7 @@ def ena_read_manifest_validate(request, profile_id):
     checklist_id = request.GET.get("checklist_id")
     data = {"profile_id": profile_id}
     if checklist_id:
-        checklist = EnaChecklist().execute_query({"primary_id": checklist_id})
+        checklist = EIChecklist().execute_query({"primary_id": checklist_id})
         if checklist:
             data["checklist_id"] = checklist_id
             data["checklist_name"] = checklist[0]["name"]
@@ -64,7 +64,7 @@ def parse_ena_spreadsheet(request):
         if inspect.isclass(element) and issubclass(element, Validator) and not element.__name__ == "Validator":
             required_validators.append(element)
 
-    ena = EnaCheckListSpreadsheet(file=file, checklist_id=checklist_id, component="sample", validators=required_validators)
+    ena = EICheckListSpreadsheet(file=file, checklist_id=checklist_id, component="sample", validators=required_validators)
     s3obj = s3()
     if name.endswith("xlsx") or name.endswith("xls"):
         fmt = 'xls'
@@ -113,9 +113,9 @@ def save_ena_records(request):
     #profile_name = Profile().get_name(profile_id)
     uid = str(request.user.id)
     username = request.user.username
-    checklist = EnaChecklist().get_collection_handle().find_one({"primary_id": request.session["checklist_id"]})
+    checklist = EIChecklist().get_collection_handle().find_one({"primary_id": request.session["checklist_id"]})
     column_name_mapping = { field["name"].upper() : key  for key, field in checklist["fields"].items() if not field.get("read_field", False) }
-    #checklist_read = EnaChecklist().get_collection_handle().find_one({"primary_id": "read"})
+    #checklist_read = EIChecklist().get_collection_handle().find_one({"primary_id": "read"})
     column_name_mapping_read = { field["name"].upper() : key  for key, field in checklist["fields"].items() if field.get("read_field", False) }
     #bundle = list()
     #alias = str(uuid.uuid4())
@@ -591,7 +591,7 @@ def get_read_accessions(request, sample_accession):
 def copo_reads(request, profile_id):
     request.session["profile_id"] = profile_id
     profile = Profile().get_record(profile_id)
-    checklists = EnaChecklist().get_sample_checklists_no_fields()
+    checklists = EIChecklist().get_sample_checklists_no_fields()
     profile_checklist_ids = Sample().get_distinct_checklist(profile_id)
     if not profile_checklist_ids:
         profile_checklist_ids = []
@@ -605,7 +605,7 @@ def copo_reads(request, profile_id):
 def download_initial_read_manifest(request, profile_id):
     request.session["profile_id"] = profile_id
     samples = Sample().get_all_records_columns(filter_by={"profile_id": profile_id}, projection={"_id":0, "biosampleAccession":1, "TAXON_ID":1, "SPECIMEN_ID":1})
-    checklist = EnaChecklist().get_collection_handle().find_one({"primary_id": "read"})
+    checklist = EIChecklist().get_collection_handle().find_one({"primary_id": "read"})
     bytesstring = BytesIO()
     write_manifest(checklist=checklist, samples=samples, for_dtol=True, file_path=bytesstring)
     response = HttpResponse(bytesstring.getvalue(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
